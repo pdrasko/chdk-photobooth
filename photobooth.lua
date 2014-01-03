@@ -42,23 +42,23 @@ gain=e
 
 ----
 function cameraready()
-  if( get_flash_mode() == 2 ) then
+	if( get_flash_mode() == 2 ) then
 		if get_shooting() then
-			return false
+			cameraready()
 		else
-			return true
+			shootphoto()
 		end
 	else
 		if( get_shooting() == false ) and ( get_flash_ready() == true) then
-			return true
+			shootphoto()
 		else
-			return false
+			cameraready()
 		end
 	end
 end
 
 function shootphoto()
--- initial delay
+	-- initial delay
 	for i=0,(b*2) do
 		set_led(9,0,0)
 		play_sound(4)
@@ -66,7 +66,7 @@ function shootphoto()
 		set_led(9,1,30)
 		sleep(250)
 	end
---Pre-shoot warning, sound+led
+	--Pre-shoot warning, sound+led
 	play_sound(3)
 	sleep(1000)
 
@@ -77,11 +77,9 @@ function shootphoto()
 	else
 		shoot()
 	end
-	repeat 
-		set_led(9,1,30)
-		sleep(50)
-	until cameraready() == true
+	get_shooting()
 end
+
 
 --detect continuous motions for TIME seconds
 --returns true if there was motion detected more than 50% of the time in the interval specified
@@ -136,12 +134,7 @@ if rec and not vid then
 			--Start photo process
 				print("Smile for the camera!")
 				for i=1,a do
-					-- If group leaves before complete set is done, abort set
 					print("Picture #" .. i .. "/" .. a)
-					if ( md_detect_motion(7,7,1,b*1000,10,gain,f,0,1,2,2,6,6,0,2,500) == 0 ) then
-						print("Where did you go??")
-						break
-					end
 					shootphoto()
 				end
 				print("All done! Next!")
